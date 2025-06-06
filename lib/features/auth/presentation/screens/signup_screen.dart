@@ -1,5 +1,6 @@
 import 'package:easy_shop/core/constants/app_constants.dart';
 import 'package:easy_shop/features/auth/presentation/screens/login_screen.dart';
+import 'package:easy_shop/features/auth/presentation/widgets/auth_form.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
@@ -10,6 +11,48 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _authService = AuthServices();
+  bool _isLoading = false;
+
+  Future<void> _register() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
+
+      try {
+        final userCredential = await _authService.registerWithEmailAndPassword(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+          _nameController.text.trim(),
+        );
+
+        if (userCredential != null && mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -21,101 +64,135 @@ class _SignUpState extends State<SignUp> {
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           physics: const NeverScrollableScrollPhysics(),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              //ACCOUNT CREATION TEXT INSTRUCTION
-              Text(
-                'Create Your Account',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 15.0),
-              Text(
-                'Join ShopEasy today and explore amazing deals!',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-              ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //ACCOUNT CREATION TEXT INSTRUCTION
+                Text(
+                  'Create Your Account',
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 15.0),
+                Text(
+                  'Join ShopEasy today and explore amazing deals!',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
+                ),
 
-              //Sign Up Form
-              SizedBox(height: 30.0),
-              TextFieldContainer(
-                size: size,
-                icon: Icon(Icons.person),
-                hint: "John Doe",
-              ),
-              SizedBox(height: 25.0),
-              TextFieldContainer(
-                size: size,
-                icon: Icon(Icons.email),
-                hint: "you@example.com",
-              ),
-              SizedBox(height: 25.0),
-              TextFieldContainer(
-                size: size,
-                icon: Icon(Icons.password),
-                hint: "Create Strong Password",
-              ),
-              SizedBox(height: 35.0),
+                //Sign Up Form
+                SizedBox(height: 30.0),
+                TextFieldContainer(
+                  size: size,
+                  icon: Icon(Icons.person),
+                  hint: "John Doe",
+                  controller: _nameController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 25.0),
+                TextFieldContainer(
+                  size: size,
+                  icon: Icon(Icons.email),
+                  hint: "you@example.com",
+                  controller: _emailController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    if (!value.contains('@')) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 25.0),
+                TextFieldContainer(
+                  size: size,
+                  icon: Icon(Icons.password),
+                  hint: "Create Strong Password",
+                  controller: _passwordController,
+                  isPassword: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 35.0),
 
-              //SIGN UP BUTTON
-              SizedBox(
-                width: size.width * 0.86,
-                height: 50.0,
-                child: Expanded(
+                //SIGN UP BUTTON
+                SizedBox(
+                  width: size.width * 0.86,
+                  height: 50.0,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: _isLoading ? null : _register,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppConstants.buttonColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0),
                       ),
                     ),
-                    child: Text(
-                      'Create Account',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppConstants.backgroundColor,
+                    child:
+                        _isLoading
+                            ? CircularProgressIndicator(
+                              color: AppConstants.backgroundColor,
+                            )
+                            : Text(
+                              'Create Account',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppConstants.backgroundColor,
+                              ),
+                            ),
+                  ),
+                ),
+
+                SizedBox(height: 15.0),
+                //TERMS AND POLICY
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: Text(
+                    'By tapping create account, you accept our Terms of Services and Privacy Policy.',
+                    style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(height: 50.0),
+
+                Text(
+                  'Already have an account?',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginScreen(),
                       ),
+                    );
+                  },
+                  child: Text(
+                    'Log In',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppConstants.forgotPassword,
                     ),
                   ),
                 ),
-              ),
-
-              SizedBox(height: 15.0),
-              //TERMS AND POLICY
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                child: Text(
-                  'By tapping create account, you accept our Terms of Services and Privacy Policy.',
-                  style: TextStyle(fontWeight: FontWeight.w300, fontSize: 14),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              SizedBox(height: 50.0),
-
-              Text(
-                'Already have an account?',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                  );
-                },
-                child: Text(
-                  'Log In',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppConstants.forgotPassword,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -130,17 +207,26 @@ class TextFieldContainer extends StatelessWidget {
     required this.hint,
     required this.icon,
     required this.size,
+    this.controller,
+    this.validator,
+    this.isPassword = false,
   });
 
   final Size size;
   final Icon icon;
   final String hint;
+  final TextEditingController? controller;
+  final String? Function(String?)? validator;
+  final bool isPassword;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: size.width * 0.07),
-      child: TextField(
+      child: TextFormField(
+        controller: controller,
+        validator: validator,
+        obscureText: isPassword,
         decoration: InputDecoration(
           prefixIcon: icon,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),

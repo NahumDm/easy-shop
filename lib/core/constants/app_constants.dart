@@ -8,4 +8,5 @@ class AppConstants {
   static const Color buttonColor = Color(0xFFDB8E2B);
   static const Color textColor = Color(0xFF030303);
   static const Color forgotPassword = Colors.lightBlue;
+  static const Color ProductBackground = Color(0xFFF0F8FF);
 }
