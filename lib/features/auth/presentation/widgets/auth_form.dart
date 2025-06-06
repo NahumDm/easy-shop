@@ -1,5 +1,4 @@
 // Reusable authentication form widget
-import 'package:easy_shop/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthServices {
