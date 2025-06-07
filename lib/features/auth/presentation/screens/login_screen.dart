@@ -1,6 +1,8 @@
 import 'package:easy_shop/core/constants/app_constants.dart';
 import 'package:easy_shop/features/auth/presentation/screens/signup_screen.dart';
 import 'package:easy_shop/features/home/presentation/screens/home_screen.dart';
+import 'package:easy_shop/features/auth/presentation/widgets/auth_form.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,6 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _authService = AuthServices();
   bool _isLoading = false;
 
   Future<void> _login() async {
@@ -21,20 +24,32 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = true);
 
       try {
-        // Simple delay to simulate loading
-        await Future.delayed(const Duration(seconds: 1));
+        final user = await _authService.signInWithEmailAndPassword(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
 
-        if (mounted) {
+        if (user != null && mounted) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+          );
+        }
+      } on FirebaseAuthException catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.message ?? 'An error occurred during login'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('An error occurred. Please try again.'),
+            SnackBar(
+              content: Text('An unexpected error occurred'),
+              backgroundColor: Colors.red,
             ),
           );
         }

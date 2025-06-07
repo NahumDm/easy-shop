@@ -1,6 +1,7 @@
 import 'package:easy_shop/core/constants/app_constants.dart';
 import 'package:easy_shop/features/auth/presentation/screens/login_screen.dart';
 import 'package:easy_shop/features/auth/presentation/widgets/auth_form.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
@@ -23,22 +24,38 @@ class _SignUpState extends State<SignUp> {
       setState(() => _isLoading = true);
 
       try {
-        final userCredential = await _authService.registerWithEmailAndPassword(
+        final user = await _authService.registerWithEmailAndPassword(
           _emailController.text.trim(),
           _passwordController.text.trim(),
           _nameController.text.trim(),
         );
 
-        if (userCredential != null && mounted) {
+        if (user != null && mounted) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const LoginScreen()),
           );
         }
+      } on FirebaseAuthException catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                e.message ?? 'An error occurred during registration',
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('An unexpected error occurred'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       } finally {
         if (mounted) setState(() => _isLoading = false);
       }
@@ -116,7 +133,7 @@ class _SignUpState extends State<SignUp> {
                   icon: Icon(Icons.password),
                   hint: "Create Strong Password",
                   controller: _passwordController,
-                  isPassword: true,
+                  obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter a password';
@@ -209,7 +226,7 @@ class TextFieldContainer extends StatelessWidget {
     required this.size,
     this.controller,
     this.validator,
-    this.isPassword = false,
+    this.obscureText = false,
   });
 
   final Size size;
@@ -217,7 +234,7 @@ class TextFieldContainer extends StatelessWidget {
   final String hint;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
-  final bool isPassword;
+  final bool obscureText;
 
   @override
   Widget build(BuildContext context) {
@@ -226,7 +243,7 @@ class TextFieldContainer extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         validator: validator,
-        obscureText: isPassword,
+        obscureText: obscureText,
         decoration: InputDecoration(
           prefixIcon: icon,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.0)),

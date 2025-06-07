@@ -315,11 +315,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ),
                                             ),
                                           ),
-                                          SizedBox(height: 5.0),
+                                          SizedBox(height: 3.0),
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: 10.0,
-                                              vertical: 3.0,
                                             ),
                                             child: Text(
                                               overflow: TextOverflow.ellipsis,
@@ -333,7 +332,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
                                               horizontal: 10.0,
-                                              vertical: 8.0,
                                             ),
                                             child: Text(
                                               '\$${product.price.toStringAsFixed(2)}',
