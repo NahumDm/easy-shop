@@ -85,17 +85,17 @@ flutter run
 
 ### Home Screen
 
-<img src="assets/screenshots/Screenshot_1749257278.png" alt="App Screenshot" width="300" height="500"/>
+<img src="assets/screenshots/Screenshot_1749257278.png" alt="App Screenshot" width="400" height="600"/>
 
 
 ### Product Detail
 
-<img src="assets/screenshots/Screenshot_1749257311.png" alt="App Screenshot" width="300" height="500"/>
+<img src="assets/screenshots/Screenshot_1749257311.png" alt="App Screenshot" width="400" height="600"/>
 
 
 ### Cart
 
-<img src="assets/screenshots/Screenshot_1749257322.png" alt="App Screenshot" width="300" height="500"/>
+<img src="assets/screenshots/Screenshot_1749257322.png" alt="App Screenshot" width="400" height="600"/>
 
 
 ## Contributing
