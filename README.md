@@ -81,65 +81,19 @@ flutter pub get
 flutter run
 ```
 
-## Project Structure
-
-```
-lib/
-├── core/
-│   ├── constants/
-│   │   └── app_constants.dart
-│   └── services/
-│       └── api_services.dart
-├── features/
-│   ├── auth/
-│   │   └── presentation/
-│   │       └── screens/
-│   │           └── onboarding_screen.dart
-│   ├── cart/
-│   │   └── presentation/
-│   │       └── screens/
-│   │           └── cart_screen.dart
-│   ├── home/
-│   │   └── presentation/
-│   │       └── screens/
-│   │           └── home_screen.dart
-│   ├── product/
-│   │   └── data/
-│   │       └── models/
-│   │           ├── cart_provider.dart
-│   │           └── product_model.dart
-│   ├── product_detail/
-│   │   └── presentation/
-│   │       └── screens/
-│   │           └── product_detail_screen.dart
-│   ├── profile/
-│   │   └── presentation/
-│   │       └── screens/
-│   │           └── profile_screen.dart
-│   └── search/
-│       └── presentation/
-│           └── screens/
-│               └── search_screen.dart
-└── main.dart
-```
-
 ## Screenshots
 
 ### Home Screen
 
-[Add screenshot of home screen showing product grid]
+![Home Screen](assets/screenshots/Screenshot_1749257278.png)
 
 ### Product Detail
 
-[Add screenshot of product detail screen]
+![Product Detail](assets/screenshots/Screenshot_1749257311.png)
 
 ### Cart
 
-[Add screenshot of cart screen with items]
-
-### Search
-
-[Add screenshot of search screen]
+![Cart](assets/screenshots/Screenshot_1749257322.png)
 
 ## Contributing
 
